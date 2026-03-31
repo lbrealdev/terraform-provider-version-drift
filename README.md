@@ -1,6 +1,6 @@
-# AWS Lambda Terraform Test
+# Terraform Provider Version Drift
 
-Collection of minimal Terraform configurations demonstrating common AWS Lambda issues and edge cases.
+Collection of minimal Terraform configurations demonstrating provider version drift issues.
 
 ## Cases
 

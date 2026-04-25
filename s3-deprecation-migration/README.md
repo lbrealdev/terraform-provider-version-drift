@@ -26,7 +26,7 @@ create_modern_resources = true  # Use modern resource blocks
 
 When running `terraform plan` with deprecated arguments, Terraform displays warnings for each deprecated configuration:
 
-```text
+```shell
 ╷
 │ Warning: Argument is deprecated
 │
@@ -46,7 +46,7 @@ This proof of concept demonstrates the complete migration process using the `jus
 
 ### Step 1: Create initial bucket with deprecated arguments
 
-```bash
+```shell
 # Initialize and apply with default settings (deprecated arguments)
 just init s3-deprecation-migration
 just plan s3-deprecation-migration
@@ -56,7 +56,7 @@ just apply s3-deprecation-migration
 Expected output:
 
 **Plan output:**
-```text
+```shell
 Plan: 3 to add, 0 to change, 0 to destroy.
 ╷
 │ Warning: Argument is deprecated
@@ -79,7 +79,7 @@ To perform exactly these actions, run the following command to apply:
 ```
 
 **Apply output:**
-```text
+```shell
 random_id.bucket_suffix: Creating...
 random_id.bucket_suffix: Creation complete after 0s [id=Gb5HbA]
 aws_s3_bucket.logging_target: Creating...
@@ -108,7 +108,7 @@ Expected behavior:
 
 ### Step 2: Toggle deprecated arguments for testing
 
-```bash
+```shell
 # Comment out deprecated arguments in main.tf (lines 39-70)
 just deprecate
 ```
@@ -116,7 +116,7 @@ just deprecate
 Expected output:
 
 **deprecate output:**
-```text
+```shell
 Deprecated arguments DISABLED
 ```
 
@@ -126,7 +126,7 @@ Expected behavior:
 
 ### Step 3: Migrate to modern resources
 
-```bash
+```shell
 # Apply with modern resource blocks enabled
 just plan s3-deprecation-migration -var="create_modern_resources=true"
 just apply s3-deprecation-migration -var="create_modern_resources=true"
@@ -135,7 +135,7 @@ just apply s3-deprecation-migration -var="create_modern_resources=true"
 Expected output:
 
 **Plan output:**
-```text
+```shell
 random_id.bucket_suffix: Refreshing state... [id=Gb5HbA]
 aws_s3_bucket.logging_target: Refreshing state... [id=my-access-logs-bucket-19be476c]
 aws_s3_bucket.main: Refreshing state... [id=my-app-logs-19be476c]
@@ -225,7 +225,7 @@ To perform exactly these actions, run the following command to apply:
 ```
 
 **Apply output:**
-```text
+```shell
 aws_s3_bucket_versioning.main[0]: Creating...
 aws_s3_bucket_lifecycle_configuration.main[0]: Creating...
 aws_s3_bucket_ownership_controls.main[0]: Creating...
@@ -252,7 +252,7 @@ Expected output:
 
 ### Step 4: Cleanup
 
-```bash
+```shell
 # Destroy all created resources
 just destroy s3-deprecation-migration -var="create_modern_resources=true"
 ```
@@ -260,7 +260,7 @@ just destroy s3-deprecation-migration -var="create_modern_resources=true"
 Expected output:
 
 **Destroy output:**
-```text
+```shell
 Plan: 0 to add, 0 to change, 8 to destroy.
 
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -302,21 +302,9 @@ After final apply:
 - Bucket remains functional with same name after migration
 - No deprecation warnings with modern resources
 
-## Commands Summary
-
-```bash
-# Complete reproduction flow
-just init s3-deprecation-migration
-just plan s3-deprecation-migration
-just apply s3-deprecation-migration
-just deprecate
-just plan s3-deprecation-migration -var="create_modern_resources=true"
-just apply s3-deprecation-migration -var="create_modern_resources=true"
-just destroy s3-deprecation-migration -var="create_modern_resources=true"
-```
-
 ## Files
 
-- `main.tf` - S3 bucket configuration with boolean-controlled resources
-- `versions.tf` - Provider version constraints
-- `README.md` - This documentation
+- `main.tf` - S3 bucket configuration with deprecated and modern resource blocks controlled by boolean flag
+- `variables.tf` - Input variables for region and create_modern_resources configuration
+- `versions.tf` - AWS provider version constraints
+- `README.md` - Complete reproduction flow documentation

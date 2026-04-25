@@ -1,0 +1,49 @@
+# Local .terraform directory
+.terraform/
+.terraform.lock.hcl
+
+# Terraform plan files
+plan
+plan.*
+destroy
+destroy.*
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Skills lockfile
+skills-lock.json
+skills-lock.*
+
+# Skills cache
+.agents/
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Ruff cache
+.ruff_cache/
+
+# Variable files (uncomment if you want to ignore all)
+# *.tfvars
+# *.tfvars.json
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Temporary files
+tmp/
+temp/

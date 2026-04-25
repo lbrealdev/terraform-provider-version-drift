@@ -8,7 +8,7 @@ AWS provider version 4.0 uses deprecated arguments for bucket configuration. Thi
 
 ## Boolean Flag
 
-```bash
+```terraform
 create_modern_resources = false  # Use deprecated arguments (default)
 create_modern_resources = true  # Use modern resource blocks
 ```

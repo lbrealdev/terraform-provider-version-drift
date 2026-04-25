@@ -308,3 +308,12 @@ After final apply:
 - `variables.tf` - Input variables for region and create_modern_resources configuration
 - `versions.tf` - AWS provider version constraints
 - `README.md` - Complete reproduction flow documentation
+
+## Reference
+
+- [`aws_s3_bucket`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) - S3 bucket resource
+- [`aws_s3_bucket_ownership_controls`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) - Manages S3 bucket ownership controls
+- [`aws_s3_bucket_acl`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_acl) - Manages S3 bucket ACL
+- [`aws_s3_bucket_logging`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_logging) - Manages S3 bucket logging
+- [`aws_s3_bucket_versioning`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_versioning) - Manages S3 bucket versioning
+- [`aws_s3_bucket_lifecycle_configuration`](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_lifecycle_configuration) - Manages S3 bucket lifecycle configuration

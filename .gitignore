@@ -5,6 +5,8 @@
 # Terraform plan files
 plan
 plan.*
+destroy
+destroy.*
 
 # Terraform state files
 *.tfstate

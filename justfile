@@ -35,18 +35,18 @@ alias d := destroy
 
 # Create a plan in a solution directory
 # Usage: just plan SOLUTION
-@plan SOLUTION:
-    terraform -chdir={{ SOLUTION }} plan -out plan
+@plan SOLUTION *arg:
+    terraform -chdir={{ SOLUTION }} plan {{ arg }} -out plan
 
 # Apply a plan in a solution directory
 # Usage: just apply SOLUTION
-@apply SOLUTION:
-    terraform -chdir={{ SOLUTION }} apply plan
+@apply SOLUTION *arg:
+    terraform -chdir={{ SOLUTION }} apply {{ arg }} plan
 
 # Create and apply a destroy plan
 # Usage: just destroy SOLUTION
-@destroy SOLUTION:
-    terraform -chdir={{ SOLUTION }} plan -destroy -out destroy
+@destroy SOLUTION *arg:
+    terraform -chdir={{ SOLUTION }} plan {{ arg }} -destroy -out destroy
     just _confirm-destroy {{ SOLUTION }}
 
 [confirm("Are you sure you want to destroy all Terraform resources? This action cannot be undone.")]
@@ -82,3 +82,16 @@ alias d := destroy
 # Usage: just refresh SOLUTION
 @refresh SOLUTION:
     terraform -chdir={{ SOLUTION }} refresh
+
+# Toggle deprecated arguments in S3 migration config
+# Usage: just deprecate
+[working-directory: 's3-deprecation-migration']
+@deprecate:
+    # Check if deprecated args are currently commented (lines 39-70 start with '#')
+    if grep -q '^  # acl' main.tf; then \
+        sed -i '39,70s/^  # /  /' main.tf; \
+        echo "Deprecated arguments ENABLED"; \
+    else \
+        sed -i '39,70s/^  /  # /' main.tf; \
+        echo "Deprecated arguments DISABLED"; \
+    fi

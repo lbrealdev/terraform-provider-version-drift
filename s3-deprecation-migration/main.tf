@@ -6,42 +6,74 @@ resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
-resource "aws_s3_bucket" "example" {
+resource "aws_s3_bucket" "logging_target" {
+  bucket = "my-access-logs-bucket-${random_id.bucket_suffix.hex}"
+
+  tags = {
+    Name        = "my-access-logs-bucket"
+    Environment = "production"
+  }
+}
+
+resource "aws_s3_bucket" "main" {
   bucket = "my-app-logs-${random_id.bucket_suffix.hex}"
 
-  acl           = "private"
   force_destroy = false
 
-  logging {
-    target_bucket = "my-access-logs-bucket"
-    target_prefix = "log/"
-  }
+  # LEGACY/DEPRECATED: These arguments work but generate deprecation warnings
+  # in AWS provider v4.0+. They are commented out to show the modern replacement pattern.
+  #
+  # Arguments below are replaced by:
+  #   acl           -> aws_s3_bucket_acl
+  #   logging       -> aws_s3_bucket_logging
+  #   versioning    -> aws_s3_bucket_versioning
+  #   lifecycle_rule-> aws_s3_bucket_lifecycle_configuration
+  #
+  # Use create_modern_resources=false to use these deprecated arguments (for comparison)
+  # Use create_modern_resources=true to use the modern resources below
 
-  versioning {
-    enabled    = true
-    mfa_delete = false
-  }
+  # ============================================
+  # DEPRECATED ARGUMENTS START HERE
+  # ============================================
 
-  lifecycle_rule {
-    id      = "archive-logs"
-    enabled = true
+  # acl = "private"
 
-    prefix = "logs/"
+  # logging {
+  #   target_bucket = aws_s3_bucket.logging_target.id
+  #   target_prefix = "log/"
+  # }
 
-    transition {
-      days          = 30
-      storage_class = "STANDARD_IA"
-    }
+  # versioning {
+  #   enabled    = true
+  #   mfa_delete = false
+  # }
 
-    transition {
-      days          = 90
-      storage_class = "GLACIER"
-    }
+  # lifecycle_rule {
+  #   id      = "archive-logs"
+  #   enabled = true
 
-    expiration {
-      days = 365
-    }
-  }
+  #   prefix = "logs/"
+
+  #   transition {
+  #     days          = 30
+  #     storage_class = "STANDARD_IA"
+  #   }
+
+  #   transition {
+  #     days          = 90
+  #     storage_class = "GLACIER"
+  #   }
+
+  #   expiration {
+  #     days = 365
+  #   }
+  # }
+
+  # ============================================
+  # DEPRECATED ARGUMENTS END HERE
+  # ============================================
+
+  depends_on = [aws_s3_bucket.logging_target]
 
   tags = {
     Name        = "my-app-logs"
@@ -49,36 +81,55 @@ resource "aws_s3_bucket" "example" {
   }
 }
 
-resource "aws_s3_bucket_acl" "example" {
+resource "aws_s3_bucket_ownership_controls" "main" {
   count = var.create_modern_resources ? 1 : 0
 
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.main.id
+
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "main" {
+  count = var.create_modern_resources ? 1 : 0
+
+  bucket = aws_s3_bucket.main.id
   acl    = "private"
+
+  depends_on = [
+    aws_s3_bucket.main,
+    aws_s3_bucket_ownership_controls.main
+  ]
 }
 
-resource "aws_s3_bucket_logging" "example" {
+resource "aws_s3_bucket_logging" "main" {
   count = var.create_modern_resources ? 1 : 0
 
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.main.id
 
-  target_bucket = "my-access-logs-bucket"
+  target_bucket = aws_s3_bucket.logging_target.id
   target_prefix = "log/"
+
+  depends_on = [aws_s3_bucket.main, aws_s3_bucket.logging_target]
 }
 
-resource "aws_s3_bucket_versioning" "example" {
+resource "aws_s3_bucket_versioning" "main" {
   count = var.create_modern_resources ? 1 : 0
 
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.main.id
 
   versioning_configuration {
     status = "Enabled"
   }
+
+  depends_on = [aws_s3_bucket.main]
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "example" {
+resource "aws_s3_bucket_lifecycle_configuration" "main" {
   count = var.create_modern_resources ? 1 : 0
 
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.main.id
 
   rule {
     id     = "archive-logs"
@@ -102,15 +153,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "example" {
       days = 365
     }
   }
-}
 
-resource "aws_s3_bucket" "logging_target" {
-  count = var.create_modern_resources ? 1 : 0
-
-  bucket = "my-access-logs-bucket"
-
-  tags = {
-    Name        = "my-access-logs-bucket"
-    Environment = "production"
-  }
+  depends_on = [aws_s3_bucket.main]
 }

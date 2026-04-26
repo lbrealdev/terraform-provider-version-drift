@@ -1,6 +1,6 @@
-# Terraform Provider Version Drift
+# Terraform AWS Problem-Solutions
 
-Collection of minimal Terraform configurations demonstrating provider version drift issues.
+Collection of minimal Terraform configurations demonstrating AWS provider issues and solutions.
 
 ## Cases
 

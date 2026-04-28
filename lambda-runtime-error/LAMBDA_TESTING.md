@@ -2,6 +2,15 @@
 
 This guide explains how to test the Lambda function in the `lambda-runtime-error` solution.
 
+## Lambda Function Response
+
+The Lambda function now returns a message that includes the Python runtime version:
+```
+Hello from test lambda using Python 3.12.x
+```
+
+The version is dynamically detected using Python's `sys.version_info`, ensuring it always displays the actual runtime version in use.
+
 ## Prerequisites
 
 1. AWS CLI configured with appropriate credentials
@@ -50,6 +59,10 @@ aws lambda get-function \
 aws lambda invoke \
   --function-name test-lambda \
   response.json
+
+# Expected response:
+# {"statusCode": 200, "body": "Hello from test lambda using Python 3.12.x"}
+cat response.json
 ```
 
 ### Test with JSON Payload

@@ -6,6 +6,7 @@ Collection of minimal Terraform configurations demonstrating AWS provider issues
 
 - [**lambda-runtime-error**](lambda-runtime-error) — AWS provider `4.25.0` rejects `python3.12` runtime due to enum mismatch
 - [**s3-deprecation-migration**](s3-deprecation-migration) — Manual migration from deprecated S3 bucket arguments to modern resource blocks
+- [**ssm-cross-account-sharing**](ssm-cross-account-sharing) — Cross-account SSM Parameter Store sharing with Advanced-tier parameters, AWS RAM, and a customer managed KMS key
 
 ## Command Reference
 

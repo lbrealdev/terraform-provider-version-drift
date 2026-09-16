@@ -114,7 +114,7 @@ The same applies in Terraform — `data.aws_ssm_parameter` takes the owner's ARN
 | Allow the SSM reads and the KMS decrypt | consumer | `aws_iam_role_policy.parameter_reader` |
 | Read by full owner ARN | consumer | `data.aws_ssm_parameter.shared_config` / `.shared_secret` |
 
-Both halves live in one directory here, wired through two aliased providers (`aws.owner`, `aws.consumer`), so the owner↔consumer relationship is readable in a single file. There is no default provider block, so **every** resource and data block names its provider explicitly. A real deployment would typically split the two halves into separate workspaces applied with different credentials, since one set of credentials rarely has admin in both accounts.
+Both halves live in one directory here, wired through two aliased providers (`aws.owner`, `aws.consumer`), so the owner↔consumer relationship is readable across `owner.tf` and `consumer.tf`. There is no default provider block, so **every** resource and data block names its provider explicitly. A real deployment would typically split the two halves into separate workspaces applied with different credentials, since one set of credentials rarely has admin in both accounts.
 
 ## Parameter Type Matrix
 
@@ -194,7 +194,10 @@ A real apply would require: enabling RAM sharing with AWS Organizations in the m
 
 ## Files
 
-- `main.tf` - Owner and consumer configuration: KMS key, Advanced-tier parameters, RAM share and associations, consumer IAM role and policy, illustrative data sources
+- `providers.tf` - Aliased AWS providers (`aws.owner`, `aws.consumer`) and the owner-account ARN prefix local
+- `owner.tf` - Account B: KMS key, Advanced-tier parameters, RAM share and associations
+- `consumer.tf` - Account A: consumer IAM role and policy, illustrative data sources
+- `outputs.tf` - Four outputs: consumer role ARN, KMS key ARN, RAM share ARN, and the shared parameter ARNs
 - `variables.tf` - Input variables for region, placeholder account IDs and assume-role ARNs, parameter prefix, consumer role name, and RAM permission ARN
 - `versions.tf` - AWS provider version constraints
 - `README.md` - Failure modes, correct recipe, constraints, and the Secrets Manager comparison
